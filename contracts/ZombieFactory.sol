@@ -10,7 +10,12 @@ contract ZombieFactory {
             uint dna;
         }
         Zombie[] public zombies;
-        function createZombies(string memory _name, uint _dna) public {
-
+        function _createZombies(string memory _name, uint _dna) public {
+            zombies.push(Zombie(_name, _dna));
+        }
+            // start here
+        function _generateRandomDna(string memory _str) public view returns (uint) {
+            uint rand = uint(keccak256(abi.encodePacked(_str)));
+            return rand % dnaModulus;
         }
 }
