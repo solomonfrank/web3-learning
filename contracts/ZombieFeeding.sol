@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
+
 import "./ZombieFactory.sol";
 
 contract ZombieFeeding is ZombieFactory {
 
-    address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
-    KittyInterface kittyinterface = KittyInterface(ckAddress);
+    KittyInterface kittyinterface;
+    function setKittyContractAddress(address _address) external {
+        kittyinterface = KittyInterface(_address);
+    }
     function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) public {
         require(msg.sender == zombieToOwner[_zombieId]);
         Zombie storage zombie = zombies[_zombieId];
