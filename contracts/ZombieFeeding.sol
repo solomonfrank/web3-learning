@@ -7,12 +7,23 @@ import "./ZombieFactory.sol";
 contract ZombieFeeding is ZombieFactory {
 
     KittyInterface kittyinterface;
-    function setKittyContractAddress(address _address) external {
+    function setKittyContractAddress(address _address) external onlyOwner{
         kittyinterface = KittyInterface(_address);
     }
-    function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) public {
+
+    function _triggerCoolDown(Zombie storage _zombie) internal {
+        _zombie.readyTime = uint32(block.timestamp + coolDownTime);
+
+    }
+
+    function _isReady(Zombie storage _zombie) internal view returns (bool) {
+        return (_zombie.readyTime <= block.timestamp);
+
+    }
+    function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) internal {
         require(msg.sender == zombieToOwner[_zombieId]);
         Zombie storage zombie = zombies[_zombieId];
+        require(_isReady(zombie));
         _targetDna = _targetDna % dnaModulus;
         uint newDna = (_targetDna + zombie.dna) / 2;
         
@@ -20,6 +31,7 @@ contract ZombieFeeding is ZombieFactory {
       newDna = newDna - newDna % 100 + 99;
     }
         _createZombies("NoName", newDna);
+        _triggerCoolDown(zombie);
     }
 
     function feedOnKitty(uint _zombieId, uint _kittyId) public {
