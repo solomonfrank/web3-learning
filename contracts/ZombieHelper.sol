@@ -17,6 +17,12 @@ function levelUp(uint _zombieId) external payable {
 
 
 }
+
+function withdraw() external payable {
+  address payable _owner = payable(address(owner()));
+  _owner.transfer(address(this).balance);
+
+}
     
 function changeName(uint _zombieId, string calldata _newName) external aboveLevel(2, _zombieId) {
     require(msg.sender == zombieToOwner[_zombieId]);
