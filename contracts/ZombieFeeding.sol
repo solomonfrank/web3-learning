@@ -7,6 +7,11 @@ import "./ZombieFactory.sol";
 contract ZombieFeeding is ZombieFactory {
 
     KittyInterface kittyinterface;
+
+    modifier ownerof(uint _zombieId){
+        require(msg.sender == zombieToOwner[_zombieId]);
+        _;
+    }
     function setKittyContractAddress(address _address) external onlyOwner{
         kittyinterface = KittyInterface(_address);
     }
@@ -20,8 +25,7 @@ contract ZombieFeeding is ZombieFactory {
         return (_zombie.readyTime <= block.timestamp);
 
     }
-    function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) internal {
-        require(msg.sender == zombieToOwner[_zombieId]);
+    function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) internal ownerof(_zombieId) {
         Zombie storage zombie = zombies[_zombieId];
         require(_isReady(zombie));
         _targetDna = _targetDna % dnaModulus;
